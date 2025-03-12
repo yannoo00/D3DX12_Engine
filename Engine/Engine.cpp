@@ -1,22 +1,13 @@
 #include "pch.h"
 #include "Engine.h"
 
-
-
 void Engine::Init(const WindowInfo& info)
 {
 	_window = info;
 
+	// 그려질 화면 크기를 설정
 	_viewport = { 0, 0, static_cast<FLOAT>(info.width), static_cast<FLOAT>(info.height), 0.0f, 1.0f };
 	_scissorRect = CD3DX12_RECT(0, 0, info.width, info.height);
-
-	_device = make_shared<Device>();
-	_cmdQueue = make_shared<CommandQueue>();
-	_swapChain = make_shared<SwapChain>();
-	_rootSignature = make_shared<RootSignature>();
-	_cb = make_shared<ConstantBuffer>();
-	_tableDescHeap = make_shared<TableDescriptorHeap>();
-	_depthStencilBuffer = make_shared<DepthStencilBuffer>();
 
 	_device->Init();
 	_cmdQueue->Init(_device->GetDevice(), _swapChain);
@@ -26,14 +17,27 @@ void Engine::Init(const WindowInfo& info)
 	_tableDescHeap->Init(256);
 	_depthStencilBuffer->Init(_window);
 
+	_input->Init(info.hwnd);
+	_timer->Init();
+
 	ResizeWindow(info.width, info.height);
 }
 
 void Engine::Render()
 {
 	RenderBegin();
-	// 나머지 물체 그려준다.
+
+	// TODO : 나머지 물체들 그려준다
+
 	RenderEnd();
+}
+
+void Engine::Update()
+{
+	_input->Update();
+	_timer->Update();
+
+	ShowFps();
 }
 
 void Engine::RenderBegin()
@@ -56,4 +60,14 @@ void Engine::ResizeWindow(int32 width, int32 height)
 	::SetWindowPos(_window.hwnd, 0, 100, 100, width, height, 0);
 
 	_depthStencilBuffer->Init(_window);
+}
+
+void Engine::ShowFps()
+{
+	uint32 fps = _timer->GetFps();
+
+	WCHAR text[100] = L"";
+	::wsprintf(text, L"FPS : %d", fps);
+
+	::SetWindowText(_window.hwnd, text);
 }

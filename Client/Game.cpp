@@ -10,7 +10,6 @@ void Game::Init(const WindowInfo& info)
 {
 	GEngine->Init(info);
 
-
 	vector<Vertex> vec(4);
 	vec[0].pos = Vec3(-0.5f, 0.5f, 0.5f);
 	vec[0].color = Vec4(1.f, 0.f, 0.f, 1.f);
@@ -32,14 +31,14 @@ void Game::Init(const WindowInfo& info)
 		indexVec.push_back(2);
 	}
 	{
+		indexVec.push_back(0);
 		indexVec.push_back(2);
 		indexVec.push_back(3);
-		indexVec.push_back(0);
 	}
 
-	mesh->Init(vec, indexVec );
+	mesh->Init(vec, indexVec);
 
-	shader->Init(L"..\\Resources\\Shader\\default.hlsli"); //temporary hardcoding
+	shader->Init(L"..\\Resources\\Shader\\default.hlsli");
 
 	texture->Init(L"..\\Resources\\Texture\\karthus.jpg");
 
@@ -48,13 +47,24 @@ void Game::Init(const WindowInfo& info)
 
 void Game::Update()
 {
+	GEngine->Update();
+
 	GEngine->RenderBegin();
 
 	shader->Update();
 
 	{
-		Transform t;
-		t.offset = Vec4(0.25f, 0.25f, 0.3f, 0.f);
+		static Transform t = {};
+
+		if (GEngine->GetInput()->GetButton(KEY_TYPE::W))
+			t.offset.y += 1.f * DELTA_TIME;
+		if (GEngine->GetInput()->GetButton(KEY_TYPE::S))
+			t.offset.y -= 1.f * DELTA_TIME;
+		if (GEngine->GetInput()->GetButton(KEY_TYPE::A))
+			t.offset.x -= 1.f * DELTA_TIME;
+		if (GEngine->GetInput()->GetButton(KEY_TYPE::D))
+			t.offset.x += 1.f * DELTA_TIME;
+
 		mesh->SetTransform(t);
 
 		mesh->SetTexture(texture);
@@ -62,15 +72,15 @@ void Game::Update()
 		mesh->Render();
 	}
 
-	{
+	/*{
 		Transform t;
-		t.offset = Vec4(0.f, 0.f, 0.2f, 0.f);
+		t.offset = Vec4(0.f, 0.f, 0.3f, 0.f);
 		mesh->SetTransform(t);
 
 		mesh->SetTexture(texture);
 
 		mesh->Render();
-	}
+	}*/
 
 	GEngine->RenderEnd();
 }
