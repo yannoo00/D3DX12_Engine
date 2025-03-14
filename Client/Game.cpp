@@ -3,8 +3,10 @@
 #include "Engine.h"
 #include "Material.h"
 
+#include "GameObject.h"
+#include "MeshRenderer.h"
 
-shared_ptr<Mesh> mesh = make_shared<Mesh>();
+shared_ptr<GameObject> gameObject = make_shared<GameObject>();
 
 void Game::Init(const WindowInfo& info)
 {
@@ -36,22 +38,33 @@ void Game::Init(const WindowInfo& info)
 		indexVec.push_back(3);
 	}
 
-	mesh->Init(vec, indexVec);
+	gameObject->Init(); //Transform Ãß°¡ 
 
-	shared_ptr<Shader> shader = make_shared<Shader>();
-	shared_ptr<Texture> texture = make_shared<Texture>();
+	shared_ptr<MeshRenderer> meshRenderer = make_shared<MeshRenderer>();
+	{
+		shared_ptr<Mesh> mesh = make_shared<Mesh>();
+		mesh->Init(vec, indexVec);
+		meshRenderer->SetMesh(mesh);
+	}
 
-	shader->Init(L"..\\Resources\\Shader\\default.hlsli");
-	//karthus
-	texture->Init(L"..\\Resources\\Texture\\karthus.jpg");
+	{
+		shared_ptr<Shader> shader = make_shared<Shader>();
+		shared_ptr<Texture> texture = make_shared<Texture>();
 
-	shared_ptr<Material> material = make_shared<Material>();
-	material->SetShader(shader);
-	material->SetFloat(0, 0.1f);
-	material->SetFloat(1, 0.2f);
-	material->SetFloat(2, 0.3f);
-	material->SetTexture(0, texture);
-	mesh->SetMaterial(material);
+		shader->Init(L"..\\Resources\\Shader\\default.hlsli");
+		//karthus
+		texture->Init(L"..\\Resources\\Texture\\karthus.jpg");
+
+		shared_ptr<Material> material = make_shared<Material>();
+		material->SetShader(shader);
+		material->SetFloat(0, 0.1f);
+		material->SetFloat(1, 0.2f);
+		material->SetFloat(2, 0.3f);
+		material->SetTexture(0, texture);
+		meshRenderer->SetMaterial(material);
+	}
+	
+	gameObject->AddComponent(meshRenderer);
 
 	GEngine->GetCmdQueue()->WaitSync();
 }
@@ -61,33 +74,8 @@ void Game::Update()
 	GEngine->Update();
 
 	GEngine->RenderBegin();
-
-	{
-		static Transform t = {};
-
-		if (GEngine->GetInput()->GetButton(KEY_TYPE::W))
-			t.offset.y += 1.f * DELTA_TIME;
-		if (GEngine->GetInput()->GetButton(KEY_TYPE::S))
-			t.offset.y -= 1.f * DELTA_TIME;
-		if (GEngine->GetInput()->GetButton(KEY_TYPE::A))
-			t.offset.x -= 1.f * DELTA_TIME;
-		if (GEngine->GetInput()->GetButton(KEY_TYPE::D))
-			t.offset.x += 1.f * DELTA_TIME;
-
-		mesh->SetTransform(t);
-
-		mesh->Render();
-	}
-
-	/*{
-		Transform t;
-		t.offset = Vec4(0.f, 0.f, 0.3f, 0.f);
-		mesh->SetTransform(t);
-
-		mesh->SetTexture(texture);
-
-		mesh->Render();
-	}*/
+	
+	gameObject->Update();
 
 	GEngine->RenderEnd();
 }
