@@ -29,9 +29,19 @@ void Scene::Update()
 
 void Scene::LateUpdate()
 {
+	//OutputDebugStringA("GameObject LateUpdate Called!\n");
+
 	for (const shared_ptr<GameObject>& gameObject : _gameObjects)
 	{
 		gameObject->LateUpdate();
+	}
+}
+
+void Scene::FinalUpdate()
+{
+	for (const shared_ptr<GameObject>& gameObject : _gameObjects)
+	{
+		gameObject->FinalUpdate();
 	}
 }
 

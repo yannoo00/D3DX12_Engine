@@ -2,8 +2,7 @@
 
 enum class KEY_TYPE
 {
-	//윈도우에서 지원하는 키 매핑
-	UP = VK_UP, 
+	UP = VK_UP,
 	DOWN = VK_DOWN,
 	LEFT = VK_LEFT,
 	RIGHT = VK_RIGHT,
@@ -12,6 +11,9 @@ enum class KEY_TYPE
 	A = 'A',
 	S = 'S',
 	D = 'D',
+
+	Q = 'Q',
+	E = 'E',
 };
 
 enum class KEY_STATE
@@ -25,7 +27,7 @@ enum class KEY_STATE
 
 enum
 {
-	KEY_TYPE_COUNT = static_cast<int32>(UINT8_MAX+1), //사용할 인덱스가 0~255
+	KEY_TYPE_COUNT = static_cast<int32>(UINT8_MAX + 1),
 	KEY_STATE_COUNT = static_cast<int32>(KEY_STATE::END),
 };
 
@@ -49,6 +51,6 @@ private:
 
 private:
 	HWND _hwnd;
-	vector<KEY_STATE> _states; //각 키에 해당하는 상태를 보관
+	vector<KEY_STATE> _states;
 };
 
