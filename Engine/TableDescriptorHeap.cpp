@@ -8,14 +8,14 @@ void TableDescriptorHeap::Init(uint32 count)//그룹을 몇 개짜리로 만들지
 	_groupCount = count;
 
 	D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-	desc.NumDescriptors = count * REGISTER_COUNT; //각 그룹마다 레지스터가 몇 개인지.
+	desc.NumDescriptors = count * (REGISTER_COUNT-1); //각 그룹마다 레지스터가 몇 개인지. (b0은 전역)
 	desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE; //flag shader visible -> gpu메모리에 상주 가능 
 	desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV; 
 
 	DEVICE->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&_descHeap));
 
 	_handleSize = DEVICE->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-	_groupSize = _handleSize * REGISTER_COUNT;
+	_groupSize = _handleSize * (REGISTER_COUNT - 1);
 }
 
 void TableDescriptorHeap::Clear()
@@ -62,8 +62,9 @@ D3D12_CPU_DESCRIPTOR_HANDLE TableDescriptorHeap::GetCPUHandle(SRV_REGISTER reg)
 
 D3D12_CPU_DESCRIPTOR_HANDLE TableDescriptorHeap::GetCPUHandle(uint8 reg)
 {
+	assert(reg > 0);
 	D3D12_CPU_DESCRIPTOR_HANDLE handle = _descHeap->GetCPUDescriptorHandleForHeapStart();
 	handle.ptr += _currentGroupIndex * _groupSize; //그룹의 시작 주소
-	handle.ptr += reg * _handleSize; //시작 주소 + 인덱스 느낌
+	handle.ptr += (reg-1) * _handleSize; //시작 주소 + 인덱스 느낌
 	return handle;
 }

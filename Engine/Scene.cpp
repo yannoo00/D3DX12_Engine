@@ -1,11 +1,14 @@
 #include "pch.h"
 #include "Scene.h"
 #include "GameObject.h"
+#include "Camera.h"
+#include "Engine.h"
+#include "ConstantBuffer.h"
+#include "Light.h"
 
 void Scene::Awake()
 {
-	//shared pointer의 ref counter를 증가시키지 않기 위해, 복사하지 않고 레퍼런스로 들고 오기(&)
-	for (const shared_ptr<GameObject>& gameObject : _gameObjects) //foreach 개념. (직접 접근)
+	for (const shared_ptr<GameObject>& gameObject : _gameObjects)
 	{
 		gameObject->Awake();
 	}
@@ -29,8 +32,6 @@ void Scene::Update()
 
 void Scene::LateUpdate()
 {
-	//OutputDebugStringA("GameObject LateUpdate Called!\n");
-
 	for (const shared_ptr<GameObject>& gameObject : _gameObjects)
 	{
 		gameObject->LateUpdate();
@@ -43,6 +44,37 @@ void Scene::FinalUpdate()
 	{
 		gameObject->FinalUpdate();
 	}
+}
+
+void Scene::Render()
+{
+	PushLightData();
+
+	for (auto& gameObject : _gameObjects)
+	{
+		if (gameObject->GetCamera() == nullptr)
+			continue;
+
+		gameObject->GetCamera()->Render();
+	}
+}
+
+void Scene::PushLightData()
+{
+	LightParams lightParams = {};
+
+	for (auto& gameObject : _gameObjects)
+	{
+		if (gameObject->GetLight() == nullptr)
+			continue;
+
+		const LightInfo& lightInfo = gameObject->GetLight()->GetLightInfo();
+
+		lightParams.lights[lightParams.lightCount] = lightInfo;
+		lightParams.lightCount++;
+	}
+
+	CONST_BUFFER(CONSTANT_BUFFER_TYPE::GLOBAL)->SetGlobalData(&lightParams, sizeof(lightParams));
 }
 
 void Scene::AddGameObject(shared_ptr<GameObject> gameObject)
