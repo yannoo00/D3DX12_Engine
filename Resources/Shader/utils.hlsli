@@ -15,7 +15,7 @@ LightColor CalculateLightColor(int lightIndex, float3 viewNormal, float3 viewPos
     {
         // Directional Light
         viewLightDir = normalize(mul(float4(g_light[lightIndex].direction.xyz, 0.f), g_matView).xyz);
-        diffuseRatio = saturate(dot(-viewLightDir, viewNormal));
+        diffuseRatio = saturate(dot(-viewLightDir, viewNormal)); //코사인 구한다
     }
     else if (g_light[lightIndex].lightType == 1)
     {
