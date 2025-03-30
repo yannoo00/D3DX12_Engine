@@ -29,8 +29,13 @@ public:
 		
 	void AddComponent(shared_ptr<Component> component);
 
+	void SetCheckFrustum(bool checkFrustum) { _checkFrustum = checkFrustum; }
+	bool GetCheckFrustum() { return _checkFrustum; }
+
 private:
 	array<shared_ptr<Component>, FIXED_COMPONENT_COUNT> _components; //ÄÄÆ÷³ÍÆ® ½½·Ô
 	vector<shared_ptr<MonoBehaviour>> _scripts;
+
+	bool _checkFrustum = true;
 };
 
