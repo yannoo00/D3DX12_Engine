@@ -3,13 +3,14 @@
 class SwapChain;
 class DescriptorHeap;
 
+// ************************
+// GraphicsCommandQueue
+// ************************
 
-//외주를 일감을 커맨드 큐에 모아놨다가 Render End 실행하면 한 번에 수행하게 되는 것.
-//개발의 복잡성은 올라갈 수 있지만 성능 향상
-class CommandQueue
+class GraphicsCommandQueue
 {
 public:
-	~CommandQueue();
+	~GraphicsCommandQueue();
 
 	void Init(ComPtr<ID3D12Device> device, shared_ptr<SwapChain> swapChain);
 	void WaitSync();
@@ -20,23 +21,17 @@ public:
 	void FlushResourceCommandQueue();
 
 	ComPtr<ID3D12CommandQueue> GetCmdQueue() { return _cmdQueue; }
-	ComPtr<ID3D12GraphicsCommandList> GetCmdList() { return _cmdList; }
-	ComPtr<ID3D12GraphicsCommandList> GetResourceCmdList() { return _resCmdList; }
+	ComPtr<ID3D12GraphicsCommandList> GetGraphicsCmdList() { return	_cmdList; }
+	ComPtr<ID3D12GraphicsCommandList> GetResourceCmdList() { return	_resCmdList; }
 
 private:
-	// CommandQueue : DX12에 등장
-	// 외주를 요청할 때, 하나씩 요청하면 비효율적
-	// [외주 목록]에 일감을 차곡차곡 기록했다가 한 방에 요청하는 것
 	ComPtr<ID3D12CommandQueue>			_cmdQueue;
-
 	ComPtr<ID3D12CommandAllocator>		_cmdAlloc;
 	ComPtr<ID3D12GraphicsCommandList>	_cmdList;
 
-	ComPtr<ID3D12CommandAllocator> _resCmdAlloc;
-	ComPtr<ID3D12GraphicsCommandList> _resCmdList;
+	ComPtr<ID3D12CommandAllocator>		_resCmdAlloc;
+	ComPtr<ID3D12GraphicsCommandList>	_resCmdList;
 
-	// Fence : 울타리(?)
-	// CPU / GPU 동기화를 위한 간단한 도구
 	ComPtr<ID3D12Fence>					_fence;
 	uint32								_fenceValue = 0;
 	HANDLE								_fenceEvent = INVALID_HANDLE_VALUE;
@@ -44,3 +39,28 @@ private:
 	shared_ptr<SwapChain>		_swapChain;
 };
 
+// ************************
+// ComputeCommandQueue
+// ************************
+
+class ComputeCommandQueue
+{
+public:
+	~ComputeCommandQueue();
+
+	void Init(ComPtr<ID3D12Device> device);
+	void WaitSync();
+	void FlushComputeCommandQueue();
+
+	ComPtr<ID3D12CommandQueue> GetCmdQueue() { return _cmdQueue; }
+	ComPtr<ID3D12GraphicsCommandList> GetComputeCmdList() { return _cmdList; }
+
+private:
+	ComPtr<ID3D12CommandQueue>			_cmdQueue;
+	ComPtr<ID3D12CommandAllocator>		_cmdAlloc;
+	ComPtr<ID3D12GraphicsCommandList>	_cmdList;
+
+	ComPtr<ID3D12Fence>					_fence;
+	uint32								_fenceValue = 0;
+	HANDLE								_fenceEvent = INVALID_HANDLE_VALUE;
+};
