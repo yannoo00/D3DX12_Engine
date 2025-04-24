@@ -10,30 +10,33 @@ enum class COMPONENT_TYPE : uint8
 	PARTICLE_SYSTEM,
 	TERRAIN,
 	COLLIDER,
+	ANIMATOR,
 	// ...
-	MONO_BEHAVIOUR, //반드시 마지막 순서
+	MONO_BEHAVIOUR,
 	END,
 };
 
 enum
 {
-	FIXED_COMPONENT_COUNT = static_cast<uint8>(COMPONENT_TYPE::END) - 1 //모노비헤이비어 뺀 나머지 컴포넌트 개수
+	FIXED_COMPONENT_COUNT = static_cast<uint8>(COMPONENT_TYPE::END) - 1
 };
 
 class GameObject;
 class Transform;
+class MeshRenderer;
+class Animator;
 
 class Component : public Object
 {
 public:
 	Component(COMPONENT_TYPE type);
-	virtual ~Component(); //꼭 생성자 버츄얼로.
+	virtual ~Component();
 
 public:
-	virtual void Awake() { } 
-	virtual void Start() { } 
-	virtual void Update() { } 
-	virtual void LateUpdate() { } 
+	virtual void Awake() { }
+	virtual void Start() { }
+	virtual void Update() { }
+	virtual void LateUpdate() { }
 	virtual void FinalUpdate() { }
 
 public:
@@ -42,9 +45,11 @@ public:
 
 	shared_ptr<GameObject> GetGameObject();
 	shared_ptr<Transform> GetTransform();
+	shared_ptr<MeshRenderer> GetMeshRenderer();
+	shared_ptr<Animator> GetAnimator();
 
 private:
-	friend class GameObject; //game object한테만 접근권한 열어주는.
+	friend class GameObject;
 	void SetGameObject(shared_ptr<GameObject> gameObject) { _gameObject = gameObject; }
 
 protected:

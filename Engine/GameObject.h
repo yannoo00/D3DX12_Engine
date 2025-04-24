@@ -10,6 +10,7 @@ class MonoBehaviour;
 class ParticleSystem;
 class Terrain;
 class BaseCollider;
+class Animator;
 
 class GameObject : public Object, public enable_shared_from_this<GameObject>
 {
@@ -32,6 +33,7 @@ public:
 	shared_ptr<ParticleSystem> GetParticleSystem();
 	shared_ptr<Terrain> GetTerrain();
 	shared_ptr<BaseCollider> GetCollider();
+	shared_ptr<Animator> GetAnimator();
 
 	void AddComponent(shared_ptr<Component> component);
 
@@ -50,7 +52,6 @@ private:
 
 	bool _checkFrustum = true;
 	uint8 _layerIndex = 0;
-
 	bool _static = true;
 };
 
